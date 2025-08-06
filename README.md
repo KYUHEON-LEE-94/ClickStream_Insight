@@ -1,4 +1,4 @@
-# 로그 생성기 실행 방
+# HOW TO
 ```
     source venv/Scripts/activate
     pip install -r requirements.txt
