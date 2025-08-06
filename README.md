@@ -1,9 +1,7 @@
-# 로그 생성기
+# 로그 생성기 실행 방
 ```
-    mkdir -p elk-log-simulator
-    cd elk-log-simulator
-    python3 -m venv venv
     source venv/Scripts/activate
-    pip install kafka-python
+    pip install -r requirements.txt
+    python log_producer.py
 ```
 
