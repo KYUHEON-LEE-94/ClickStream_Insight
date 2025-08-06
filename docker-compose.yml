@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # ✅ Zookeeper
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+
+  # ✅ Kafka
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  # ✅ Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  # ✅ Kibana
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+
+  # ✅ Logstash (일단 Kafka 메시지 → Elasticsearch 전송 역할만)
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.0
+    depends_on:
+      - kafka
+      - elasticsearch
+    ports:
+      - "5044:5044"  # filebeat용 포트 (나중에 쓸 수도 있음)
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    environment:
+      - LOGSTASH_START=1
