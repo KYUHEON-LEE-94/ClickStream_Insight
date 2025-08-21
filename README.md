@@ -38,7 +38,8 @@ Kafka, Logstash, Elasticsearch, Kibana를 사용하여 유저의 클릭/노출/�
 |------|------|
 | 메시지 브로커 | Apache Kafka |
 | 로그 수집 | Logstash |
-| 데이터 저장 | Elasticsearch |
+| 컨테이너 환경 | Spark |
+| 실시간 집계 | Elasticsearch |
 | 시각화 | Kibana |
 | 로그 생성기 | Python (`kafka-python`) |
 | 컨테이너 환경 | Docker Compose |
@@ -48,13 +49,15 @@ Kafka, Logstash, Elasticsearch, Kibana를 사용하여 유저의 클릭/노출/�
 project/
 ├── docker-compose.yml
 ├── logstash/
-│ └── pipeline/
-│ └── logstash.conf
+│   └── pipeline/
+│       └── logstash.conf
 ├── producer/
-│ ├── venv/ (gitignore)
-│ ├── log_producer.py
-│ └── requirements.txt
-└── README.md
+│   ├── log_producer.py
+│   └── requirements.txt
+├── spark/
+│   └── click_aggregator.py
+├── .gitignore
+├── README.md
 ```
 
 ---
