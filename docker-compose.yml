@@ -1,15 +1,13 @@
-version: '3.8'
-
 services:
-  # ✅ Zookeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
       - "2181:2181"
+    networks:
+      - elk
 
-  # ✅ Kafka
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     depends_on:
@@ -24,8 +22,9 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,DOCKER://0.0.0.0:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - elk
 
-  # ✅ Elasticsearch
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
     environment:
@@ -39,8 +38,9 @@ services:
       memlock:
         soft: -1
         hard: -1
+    networks:
+      - elk
 
-  # ✅ Kibana
   kibana:
     image: docker.elastic.co/kibana/kibana:8.12.0
     depends_on:
@@ -49,16 +49,34 @@ services:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - elk
 
-  # ✅ Logstash (일단 Kafka 메시지 → Elasticsearch 전송 역할만)
   logstash:
     image: docker.elastic.co/logstash/logstash:8.12.0
     depends_on:
       - kafka
       - elasticsearch
     ports:
-      - "5044:5044"  # filebeat용 포트 (나중에 쓸 수도 있음)
+      - "5044:5044"
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
     environment:
       - LOGSTASH_START=1
+    networks:
+      - elk
+
+  spark:
+    image: bitnami/spark:3.3
+    depends_on:
+      - kafka
+      - elasticsearch
+    volumes:
+      - ./spark:/app
+    networks:
+      - elk
+    command: >
+      bash -c "spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,org.elasticsearch:elasticsearch-spark-30_2.12:8.12.0 /app/click_aggregator.py"
+
+networks:
+  elk:

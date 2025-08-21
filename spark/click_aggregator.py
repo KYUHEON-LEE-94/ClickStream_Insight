@@ -14,7 +14,7 @@ kafka_topic = "click-log"
 # Kafka 설정
 df_raw = spark.readStream \
     .format("kafka") \
-    .option("kafka.bootstrap.servers", "kafka:9092") \
+    .option("kafka.bootstrap.servers", "kafka:29092") \
     .option("subscribe", kafka_topic) \
     .option("startingOffsets", "latest") \
     .load()
@@ -51,8 +51,9 @@ df_agg.writeStream \
     .option("checkpointLocation", "/tmp/spark-checkpoint") \
     .option("es.nodes", "elasticsearch") \
     .option("es.port", "9200") \
-    .option("es.resource", "click-agg/_doc") \
+    .option("es.resource", "click-agg") \
     .option("es.nodes.wan.only", "true") \
+    .option("es.mapping.id", "productId") \
     .outputMode("update") \
     .start() \
     .awaitTermination()
