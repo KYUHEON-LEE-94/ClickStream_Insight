@@ -23,12 +23,16 @@ Kafka, Logstash, Elasticsearch, Kibana를 사용하여 유저의 클릭/노출/�
 ↓
 [Kafka]
 ↓
+[Spark]
+↓
 [Logstash]
 ↓
 [Elasticsearch]
 ↓
 [Kibana]
 ```
+<img width="512" height="512" alt="image" src="https://github.com/user-attachments/assets/6295d44a-8563-4b6f-a563-430a50c79a75" />
+
 
 ---
 
@@ -38,8 +42,8 @@ Kafka, Logstash, Elasticsearch, Kibana를 사용하여 유저의 클릭/노출/�
 |------|------|
 | 메시지 브로커 | Apache Kafka |
 | 로그 수집 | Logstash |
-| 컨테이너 환경 | Spark |
-| 실시간 집계 | Elasticsearch |
+| 클릭수 집계 | Spark |
+| 클릭수 집계 데이터 인덱스 | Elasticsearch |
 | 시각화 | Kibana |
 | 로그 생성기 | Python (`kafka-python`) |
 | 컨테이너 환경 | Docker Compose |
